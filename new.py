@@ -7,9 +7,9 @@ import pgeocode
 
 print('reading excel and coordinat file...')
 start = time()
-file = r'dataset.xlsx'
+file = r'Data/dataset.xlsx'
 df = pd.read_excel(file)
-file2 = r'IsoChange.txt'
+file2 = r'Data/IsoChange.txt'
 cd = pd.read_csv(file2, sep="\t", header = None, low_memory=False, names= ["country", "iso2", "iso3", "4"])
 print('reading excel file and coordinat file completed (', round(time() - start, 2), 'sec )')
 df2 = pd.DataFrame()
