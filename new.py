@@ -117,8 +117,7 @@ def koordinatlamav2(cds):
                 df.at[i, 'Destination Country Key'] = 'GB'
             if df.at[i, 'Origin Country Key'] == 'UK':
                 df.at[i, 'Origin Country Key'] = 'GB'
-    print('postakodları ile koordinatlar eşleştiriliyor..')
-    for i in tqdm(range(len(df))):
+    for i in range(len(df)):
         if df.at[i, 'Origin Postal Code'] not in cds[0] :
             cds[0].append(df.at[i, 'Origin Postal Code'])
             cds[1].append(df.at[i, 'Origin Country Key'])
