@@ -70,7 +70,7 @@ def isClosed(i,o,d,checkF,k):
     if i != o :
         checkF.remove(i)
 
-def finalRemover(final):
+def finalRemover(final): #KULLANILAN YOLLARI X MATRİSİNDEN SİLEN FONKSİYOR
     print(final[0] ,'için rota bulundu:', final)
     # [0,1,2,3,4,5,6,65,9]
     for k in range(len(final)):
@@ -96,9 +96,9 @@ def ifClosed(k,final): #BAŞLANGIÇ VE BİTİŞ NOKTALARINI BULUP YOLU TEST EDİ
                     if isClosed(i,i,d,checkF,k):
                         #print('olasilik bulundu',checkF)
                         #if len(final) < len(checkF) :
-                        final.append(checkF)
+                        final.append(checkF) #ROTALARI TUTAN DİZİYE EKLİYOR
                         print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
-                        finalRemover(checkF)
+                        finalRemover(checkF) #KULLANILAN YOLLARIN SİLİNMESİ İÇİN FINALREMOVER FONKSİYONUNA GÖNDERİLİYOR
                         return True
             """if len(final) > 0:
                 print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
@@ -143,8 +143,10 @@ def koordinatlamav2(cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> H
                 df.at[i,'lat2'] = cds[2][j]
                 df.at[i,'lon2'] = cds[3][j]
 
-def distanceChecker(a,b):
-    if(b==-1):
+
+
+def distanceChecker(a,b): #TESLİMATLAR ARASINDAKİ UZAKLIĞI VEREN FONKSİYON
+    if(b==-1):              #B DEĞERİNİ -1 VERDİĞİMİZDE TEK TESLİMATIN GİTTİ UZAKLIK DÖNÜYOR
         lat2 = radians(df.at[a,'lat2'])
         lon2 = radians(df.at[a,'lon2'])
     else:
