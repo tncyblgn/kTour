@@ -141,7 +141,6 @@ def koordinatlamav2(cds):
             if df.at[i, 'Destination Postal Code'] == cds[0][j]:
                 df.at[i,'lat2'] = cds[2][j]
                 df.at[i,'lon2'] = cds[3][j]
-    print('koordinatlar dataya eklendi.')
 
 def distanceChecker(a,b):
     if(b==-1):
