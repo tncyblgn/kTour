@@ -184,9 +184,8 @@ def sectoD(time):
 
 def yaz(final):
     print('bulunan rotalar dosyalanıyor...')
-    start = time()
     m=0
-    for i in range(len(final)):
+    for i in tqdm(range(len(final))):
         df2.at[m,0]  = '-----ID-----'
         df2.at[m,1]  = '--Origin Postal Code--'
         df2.at[m,2]  = '---Goods issue date---'
@@ -229,7 +228,6 @@ def yaz(final):
     df2.sort_index(inplace=True)
     df2.sort_index(inplace=True,axis=1)
     df2.to_excel("output.xlsx", index=False, header=False)
-    print('dosyalama işlemi bitt suresi: (', round(time() - start, 2), 'sec )')
 
 
 
