@@ -26,7 +26,7 @@ def isSafe(i, j):
                                 if ( df.at[j,'Delivery Date'] > df.at[j,'Goods issue date'] ):
                                     return True
 
-def knightsT(x):
+def knightsT(x): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİSİNE AKTARIYOR
     print('data işlenip matrix e aktarılıyor...')
     for i in tqdm(range(len(df))):
         for j in range(len(df)):
@@ -81,7 +81,7 @@ def finalRemover(final):
         x[final[k]][1] = []
     # i[ [0] [1] ]
 
-def ifClosed(k,final):
+def ifClosed(k,final): #BAŞLANGIÇ VE BİTİŞ NOKTALARINI BULUP YOLU TEST EDİYOR
     starttt = time()
     for i in range(len(df)):
         if len(x[i][1]) > 0 and len(x[i][0]) == 0 : #başlangıç noktasını buluyor
@@ -105,8 +105,8 @@ def ifClosed(k,final):
                 finalRemover(final)
                 return True  """
 
-def koordinatlamav2(cds):
-    print('datadan postakodu bilgileri çekiliyor...')
+def koordinatlamav2(cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
+    print('datadaki iso3 ülke kodları iso2 ye çevriliyor..')
     for i in tqdm(range(len(df))):
         for j in range(len(cd)):
             if df.at[i, 'Destination Country Key'] == cd.at[j, 'iso3']:
@@ -118,6 +118,7 @@ def koordinatlamav2(cds):
             if df.at[i, 'Origin Country Key'] == 'UK':
                 df.at[i, 'Origin Country Key'] = 'GB'
     for i in range(len(df)):
+        #posta kodu ve ülkü datası toplanıyor
         if df.at[i, 'Origin Postal Code'] not in cds[0] :
             cds[0].append(df.at[i, 'Origin Postal Code'])
             cds[1].append(df.at[i, 'Origin Country Key'])
