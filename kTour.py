@@ -14,7 +14,6 @@ cd = pd.read_csv(file2, sep="\t", header = None, low_memory=False, names= ["coun
 print('reading excel file and coordinat file completed (', round(time() - start, 2), 'sec )')
 df2 = pd.DataFrame()
 
-
 def isSafe(i, j):
     if str(df.at[i,'Destination Postal Code']) == str(df.at[j,'Origin Postal Code']) :
         if str(df.at[i,'Destination Postal Code']) != str(df.at[i,'Origin Postal Code']) :
@@ -34,13 +33,17 @@ def knightsT(x): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİS
                 x[i][1].append(j) #i nin gittiği yer dizisine j yi koyuyor
                 x[j][0].append(i) #j nin geldiği yer dizisine i yi koyuyor
 
-def destCheck(i,dests,k): # başlangıç noktasının gidebileceği bir yer var mı? fonksiyonu
+def destCheck(i,k): # başlangıç noktasının gidebileceği bir yer var mı? fonksiyonu
+    tmp_time = df.at[i, 'Goods issue date']
+    tmp = -1
     for d in range(len(df)):
-        if len(x[i][1]) > 0 and len(x[i][0]) == 0 : # i'nin başlangıç noktsa olup olmadığını kontrol ediyor
-            if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
-                if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
-                    if check(i,d,k) :
-                        dests.append(d)
+        if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
+            if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
+                if check(i,d,k) :
+                    if df.at[d,'Goods issue date'] > tmp_time:
+                        tmp = d
+                        tmp_time = df.at[d,'Goods issue date']
+    return tmp
 
 def check(i,j,k): # çek fonksiyonu
     if k == 0:
@@ -53,11 +56,8 @@ def check(i,j,k): # çek fonksiyonu
             return True
     return False
 
-def isClosed(i,o,d,checkF,k):
-    checkF.append(i)
-    #print(checkF)
-    """if i == d :
-        return True """
+def isClosed(i,o,d,road,k):
+    road.append(i)
     if check(o,i,k):
         if len(x[i][1]) == 0 :
             return True
@@ -65,45 +65,33 @@ def isClosed(i,o,d,checkF,k):
         for j in range(len(x[i][1])):
             j=x[i][1][j]
             if ( df.at[j,'Goods issue date'] <= df.at[d,'Goods issue date'] ) :
-                if isClosed(j,o,d,checkF,k):
+                if isClosed(j,o,d,road,k):
                     return True
     if i != o :
-        checkF.remove(i)
+        road.remove(i)
 
-def finalRemover(final): #KULLANILAN YOLLARI X MATRİSİNDEN SİLEN FONKSİYOR
-    print(final[0] ,'için rota bulundu:', final)
-    # [0,1,2,3,4,5,6,65,9]
-    for k in range(len(final)):
+def roadRemover(road): #KULLANILAN YOLLARI X MATRİSİNDEN SİLEN FONKSİYOR
+    print(road[0] ,'için rota bulundu:', road)
+    for k in range(len(road)):
         for i in range(len(df)):
-            if final[k] in x[i][0] :    x[i][0].remove(final[k])
-            if final[k] in x[i][1] :    x[i][1].remove(final[k])
-        x[final[k]][0] = []
-        x[final[k]][1] = []
-    # i[ [0] [1] ]
+            if road[k] in x[i][0] :    x[i][0].remove(road[k])
+            if road[k] in x[i][1] :    x[i][1].remove(road[k])
+        x[road[k]][0] = []
+        x[road[k]][1] = []
 
 def ifClosed(k,final): #BAŞLANGIÇ VE BİTİŞ NOKTALARINI BULUP YOLU TEST EDİYOR
     starttt = time()
     for i in range(len(df)):
         if len(x[i][1]) > 0 and len(x[i][0]) == 0 : #başlangıç noktasını buluyor
-            #final = []   #final isimli diziyi 0 lıyor / cıktı vereceği rota dizisi
-            dests = []	 #dests isimli diziyi 0 lıyor / varış noktalarını biriktiren dizi
-            destCheck(i,dests,k) # başlangıç noktasının gidebileceği bir yer var mı? - fonksiyonuna gider
-            if len(dests) > 0 :
-                for d in range(len(dests)):
-                    d = dests[d]
-                    checkF = []
-                    #print(d)
-                    if isClosed(i,i,d,checkF,k):
-                        #print('olasilik bulundu',checkF)
-                        #if len(final) < len(checkF) :
-                        final.append(checkF) #ROTALARI TUTAN DİZİYE EKLİYOR
-                        print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
-                        finalRemover(checkF) #KULLANILAN YOLLARIN SİLİNMESİ İÇİN FINALREMOVER FONKSİYONUNA GÖNDERİLİYOR
-                        return True
-            """if len(final) > 0:
-                print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
-                finalRemover(final)
-                return True  """
+            dest = -1
+            dest = destCheck(i,k) # başlangıç noktasının gidebileceği bir yer var mı? - fonksiyonuna gider
+            if dest != -1 :
+                road = []
+                if isClosed(i,i,dest,road,k):
+                    final.append(road) #ROTALARI TUTAN DİZİYE EKLİYOR
+                    print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
+                    roadRemover(road) #KULLANILAN YOLLARIN SİLİNMESİ İÇİN roadREMOVER FONKSİYONUNA GÖNDERİLİYOR
+                    return True
 
 def koordinatlamav2(cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
     print('datadaki iso3 ülke kodları iso2 ye çevriliyor..')
@@ -142,8 +130,6 @@ def koordinatlamav2(cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> H
             if df.at[i, 'Destination Postal Code'] == cds[0][j]:
                 df.at[i,'lat2'] = cds[2][j]
                 df.at[i,'lon2'] = cds[3][j]
-
-
 
 def distanceChecker(a,b): #TESLİMATLAR ARASINDAKİ UZAKLIĞI VEREN FONKSİYON
     if(b==-1):              #B DEĞERİNİ -1 VERDİĞİMİZDE TEK TESLİMATIN GİTTİ UZAKLIK DÖNÜYOR
