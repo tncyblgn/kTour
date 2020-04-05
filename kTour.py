@@ -33,18 +33,6 @@ def knightsT(x): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİS
                 x[i][1].append(j) #i nin gittiği yer dizisine j yi koyuyor
                 x[j][0].append(i) #j nin geldiği yer dizisine i yi koyuyor
 
-def destCheck(i,k): # başlangıç noktasının gidebileceği bir yer var mı? fonksiyonu
-    tmp_time = df.at[i, 'Goods issue date']
-    tmp = -1
-    for d in range(len(df)):
-        if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
-            if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
-                if check(i,d,k) :
-                    if df.at[d,'Goods issue date'] > tmp_time:
-                        tmp = d
-                        tmp_time = df.at[d,'Goods issue date']
-    return tmp
-
 def check(i,j,k): # çek fonksiyonu
     if k == 0:
         a='Origin Postal Code'
@@ -78,6 +66,18 @@ def roadRemover(road): #KULLANILAN YOLLARI X MATRİSİNDEN SİLEN FONKSİYOR
             if road[k] in x[i][1] :    x[i][1].remove(road[k])
         x[road[k]][0] = []
         x[road[k]][1] = []
+
+def destCheck(i,k): # başlangıç noktasının gidebileceği bir yer var mı? fonksiyonu
+    tmp_time = df.at[i, 'Goods issue date']
+    tmp = -1
+    for d in range(len(df)):
+        if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
+            if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
+                if check(i,d,k) :
+                    if df.at[d,'Goods issue date'] > tmp_time:
+                        tmp = d
+                        tmp_time = df.at[d,'Goods issue date']
+    return tmp
 
 def ifClosed(k,final): #BAŞLANGIÇ VE BİTİŞ NOKTALARINI BULUP YOLU TEST EDİYOR
     starttt = time()
@@ -149,7 +149,7 @@ def distanceChecker(a,b): #TESLİMATLAR ARASINDAKİ UZAKLIĞI VEREN FONKSİYON
     return distance
 
 def checkmate(t,final):
-    if ifClosed(0,final) == True:
+    """if ifClosed(0,final) == True:
         t = t + 1
         print('kapalı döngü bulundu')
         while ifClosed(0,final) == True:
@@ -159,6 +159,20 @@ def checkmate(t,final):
         t = t + 1
         print('100km az mesafeye dönüldü')
         t=checkmate(t,final)
+    return t"""
+
+    devamke = True
+    while devamke == True :
+        if ifClosed(0,final) == True:
+            t = t + 1
+            print('kapalı döngü bulundu')
+            devamke = True
+        elif ifClosed(1,final) == True:
+            t = t + 1
+            print('100km az mesafeye dönüldü')
+            devamke = True
+        else:
+            devamke = False
     return t
 
 def sectoD(time):
