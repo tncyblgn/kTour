@@ -149,18 +149,6 @@ def distanceChecker(a,b): #TESLİMATLAR ARASINDAKİ UZAKLIĞI VEREN FONKSİYON
     return distance
 
 def checkmate(t,final):
-    """if ifClosed(0,final) == True:
-        t = t + 1
-        print('kapalı döngü bulundu')
-        while ifClosed(0,final) == True:
-            t = t + 1
-            print('kapalı döngü bulundu')
-    if ifClosed(1,final) == True:
-        t = t + 1
-        print('100km az mesafeye dönüldü')
-        t=checkmate(t,final)
-    return t"""
-
     devamke = True
     while devamke == True :
         if ifClosed(0,final) == True:
