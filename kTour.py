@@ -42,6 +42,8 @@ def check(i,j,k): # çek fonksiyonu
     if k == 1:
         if distanceChecker(i,j) < 100 :
             return True
+    if k == -1:
+        return True
     return False
 
 def isClosed(i,o,d,road,k):
@@ -159,7 +161,11 @@ def checkmate(t,final):
             t = t + 1
             print('100km az mesafeye dönüldü')
             devam = True
-        else:
+        elif ifClosed(-1,final) == True:
+            t = t + 1
+            print('sallama mesafeye dönüldü')
+            devam = True
+        else :
             devam = False
     return t
 
@@ -215,6 +221,7 @@ def yaz(final):
                 df2.at[m,6]='######'
                 df2.at[m,10]=sectoD(wt)
                 df2.at[m,11]=str('%.1f'%dt) + ' km'
+                df2.at[m,12]=str('%.1f'%(distanceChecker( df.at[final[i][0],'ID'] , df.at[k,'ID']))) + ' km'
                 m=m+1
     df2.sort_index(inplace=True)
     df2.sort_index(inplace=True,axis=1)
