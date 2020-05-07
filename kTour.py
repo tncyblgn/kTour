@@ -5,6 +5,8 @@ from time import time
 from tqdm import tqdm
 import pgeocode
 
+deneme
+
 print('reading excel and coordinat file...')
 start = time()
 file = r'Data/dataset.xlsx'
