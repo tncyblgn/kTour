@@ -224,8 +224,8 @@ def yaz(final):
             df2.at[m,3]=sectoD(abs((df.at[k,'Delivery Date'] - df.at[k,'Goods issue date']).total_seconds()))
             df2.at[m,4]=df.at[k,'Delivery Date']
             df2.at[m,5]=str(df.at[k,'Destination Postal Code'])
-            df2.at[m,7]=str('%.1f'%(distanceChecker(k,-1))) + ' km'
-            dt = dt + distanceChecker(k,-1)
+            df2.at[m,7]=str('%.1f'%(distanceChecker(df.at[k,'ID'],-1))) + ' km'
+            dt = dt + distanceChecker(df.at[k,'ID'],-1)
             if j != len(final[i])-1:
                 df2.at[m,6]=df.at[final[i][j+1],'ID']
                 #m = m + 1
