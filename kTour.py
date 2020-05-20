@@ -8,7 +8,7 @@ import pgeocode
 print('reading excel and coordinat file...')
 start = time()
 file = r'Data/dataset.xlsx'
-dfx = pd.read_excel(file)
+df = pd.read_excel(file)
 file2 = r'Data/IsoChange.txt'
 cd = pd.read_csv(file2, sep="\t", header = None, low_memory=False, names= ["country", "iso2", "iso3", "4"])
 print('reading excel file and coordinat file completed (', round(time() - start, 2), 'sec )')
@@ -25,23 +25,33 @@ def isSafe(i, j):
                                 if ( df.at[j,'Delivery Date'] > df.at[j,'Goods issue date'] ):
                                     return True
 
-def knightsT(x): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİSİNE AKTARIYOR
+def knightsT(): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİSİNE AKTARIYOR
+    x = []
+    for i in range(len(df)):
+        x.append([[]])
+        x[i].append([])
     print('data işlenip matrix e aktarılıyor...')
     for i in tqdm(range(len(df))):
         for j in range(len(df)):
             if isSafe(i, j):
                 x[i][1].append(j) #i nin gittiği yer dizisine j yi koyuyor
                 x[j][0].append(i) #j nin geldiği yer dizisine i yi koyuyor
+    return x
 
 def check(i,j,k): # çek fonksiyonu
     if k == 0:
-        a='Origin Postal Code'
-        b='Destination Postal Code'
-        if str(df.at[ i, a]) == str(df.at[ j, b]): #i ve j yi posta koduna göre doğruluyor
+        if str(df.at[ i, 'Origin Postal Code']) == str(df.at[ j, 'Destination Postal Code']): #i ve j yi posta koduna göre doğruluyor
             return True
     if k == 1:
-        if distanceChecker(df.at[ i, 'ID'],df.at[ j, 'ID']) < 100 :
+        if distanceChecker(i,j) < 100 :
             return True
+    if k == 2:
+        if str(df.at[ i, 'Origin Postal Code']) == str(df.at[ j, 'Destination Postal Code']): #i ve j yi posta koduna göre doğruluyor
+            return True
+    if k == 3:
+        if distanceChecker(i,j) < 100 :
+            return True
+
     if k == -1:
         return True
     return False
@@ -72,30 +82,45 @@ def roadRemover(road): #KULLANILAN YOLLARI X MATRİSİNDEN SİLEN FONKSİYOR
 def destCheck(i,k): # başlangıç noktasının gidebileceği bir yer var mı? fonksiyonu
     tmp_time = df.at[i, 'Goods issue date']
     tmp = -1
-    for d in range(len(df)):
-        if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
-            if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
-                if check(i,d,k) :
-                    if df.at[d,'Goods issue date'] > tmp_time:
-                        tmp = d
-                        tmp_time = df.at[d,'Goods issue date']
+    if k == 0 or k == 1:
+        for d in range(len(df)):
+            if len(x[d][1]) == 0 and len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
+                if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
+                    if check(i,d,k) :
+                        if df.at[d,'Goods issue date'] > tmp_time:
+                            tmp = d
+                            tmp_time = df.at[d,'Goods issue date']
+    else:
+        for d in range(len(df)):
+            if len(x[d][0]) > 0 : #d'nin bitiş noktası olup olmadığını kotnrol ediyor
+                if ( df.at[i,'Delivery Date'] <= df.at[d,'Goods issue date'] ) :
+                    if check(i,d,k) :
+                        if df.at[d,'Goods issue date'] > tmp_time:
+                            tmp = d
+                            tmp_time = df.at[d,'Goods issue date']
     return tmp
 
 def ifClosed(k,final): #BAŞLANGIÇ VE BİTİŞ NOKTALARINI BULUP YOLU TEST EDİYOR
     starttt = time()
     for i in range(len(df)):
-        if len(x[i][1]) > 0 and len(x[i][0]) == 0 : #başlangıç noktasını buluyor
-            dest = -1
-            dest = destCheck(i,k) # başlangıç noktasının gidebileceği bir yer var mı? - fonksiyonuna gider
-            if dest != -1 :
-                road = []
-                if isClosed(i,i,dest,road,k):
-                    final.append(road) #ROTALARI TUTAN DİZİYE EKLİYOR
-                    print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
-                    roadRemover(road) #KULLANILAN YOLLARIN SİLİNMESİ İÇİN roadREMOVER FONKSİYONUNA GÖNDERİLİYOR
-                    return True
+        dest = -1
+        if (k == 0) or (k == 1):
+            if len(x[i][1]) > 0 and len(x[i][0]) == 0 : #başlangıç noktasını buluyor
+                dest = destCheck(i,k) # başlangıç noktasının gidebileceği bir yer var mı? - fonksiyonuna gider
+        elif (k == 2) or (k == 3):
+            if len(x[i][1]) > 0 :
+                dest = destCheck(i,k) # başlangıç noktasının gidebileceği bir yer var mı? - fonksiyonuna gider
+        if dest != -1 :
+            road = []
+            if isClosed(i,i,dest,road,k):
+                if k != -1 :final.append(road) #ROTALARI TUTAN DİZİYE EKLİYOR
+                print('sürede yol bulundu: (', round(time() - starttt, 2), 'sec )')
+                roadRemover(road) #KULLANILAN YOLLARIN SİLİNMESİ İÇİN roadREMOVER FONKSİYONUNA GÖNDERİLİYOR
+                return True
 
-def koordinatlamav2(df, cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
+def koordinatlamav3(df): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
+    cds = []
+    for i in range(4): cds.append([])
     print('datadaki iso3 ülke kodları iso2 ye çevriliyor..')
     for i in tqdm(range(len(df))):
         for j in range(len(cd)):
@@ -134,21 +159,16 @@ def koordinatlamav2(df, cds): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS 
                 df.at[i,'lon2'] = cds[3][j]
     fals = []
     print('data ayiklaniyor..')
-    for i in tqdm(range(len(df))):
-        if (df.isnull().at[i,'lat']) or (df.isnull().at[i,'lat2']):
-            fals.append(i)
+    for i in range(len(df)):
+        if abs((df.at[i,'Delivery Date'] - df.at[i,'Goods issue date']).total_seconds()) == 0: fals.append(i)
     df.drop(index=fals, inplace=True)
-    df.to_excel('ayik.xlsx', index = False)
+    df = df[df.lat.notnull()]
+    df = df[df.lat2.notnull()]
+    df.to_excel('./Data/ayik.xlsx', index = False)
+    df = pd.read_excel(r'Data/ayik.xlsx', index = False)
+    return df
 
 def distanceChecker(a,b): #TESLİMATLAR ARASINDAKİ UZAKLIĞI VEREN FONKSİYON
-    for i in range(len(df)):
-        if df.at[i,'ID'] == a:
-            a = i
-            break
-    for i in range(len(df)):
-        if df.at[i,'ID'] == b:
-            b = i
-            break
     if(b==-1):              #B DEĞERİNİ -1 VERDİĞİMİZDE TEK TESLİMATIN GİTTİ UZAKLIK DÖNÜYOR
         lat2 = radians(df.at[a,'lat2'])
         lon2 = radians(df.at[a,'lon2'])
@@ -176,12 +196,21 @@ def checkmate(t,final):
             t = t + 1
             print('100km az mesafeye dönüldü')
             devam = True
-            """
+
+        elif ifClosed(2,final) == True:
+            t = t + 1
+            print('kapalı döngü bulundu 2')
+            devam = True
+        elif ifClosed(3,final) == True:
+            t = t + 1
+            print('100km az mesafeye dönüldü 3')
+            devam = True
+
         elif ifClosed(-1,final) == True:
             t = t + 1
             print('sallama mesafeye dönüldü')
             devam = True
-            """
+
         else :
             devam = False
     return t
@@ -224,8 +253,8 @@ def yaz(final):
             df2.at[m,3]=sectoD(abs((df.at[k,'Delivery Date'] - df.at[k,'Goods issue date']).total_seconds()))
             df2.at[m,4]=df.at[k,'Delivery Date']
             df2.at[m,5]=str(df.at[k,'Destination Postal Code'])
-            df2.at[m,7]=str('%.1f'%(distanceChecker(df.at[k,'ID'],-1))) + ' km'
-            dt = dt + distanceChecker(df.at[k,'ID'],-1)
+            df2.at[m,7]=str('%.1f'%(distanceChecker(k,-1))) + ' km'
+            dt = dt + distanceChecker(k,-1)
             if j != len(final[i])-1:
                 df2.at[m,6]=df.at[final[i][j+1],'ID']
                 #m = m + 1
@@ -238,35 +267,23 @@ def yaz(final):
                 df2.at[m,6]='######'
                 df2.at[m,10]=sectoD(wt)
                 df2.at[m,11]=str('%.1f'%dt) + ' km'
-                df2.at[m,12]=str('%.1f'%(distanceChecker( df.at[final[i][0],'ID'], df.at[k,'ID']))) + ' km'
+                df2.at[m,12]=str('%.1f'%(distanceChecker( final[i][0], final[i][-1]))) + ' km'
                 m=m+1
     df2.sort_index(inplace=True)
     df2.sort_index(inplace=True,axis=1)
     df2.to_excel("output.xlsx", index=False, header=False)
 
 
-final = []
 
 
-cds = []
-for i in range(4):
-    cds.append([])
-
-koordinatlamav2(dfx,cds)
-
-df = pd.read_excel(r'ayik.xlsx')
-x = []
-for i in range(len(df)):
-    x.append([[]])
-    x[i].append([])
-
-knightsT(x)
+df = koordinatlamav3(df)
+x = knightsT()
 
 start = time()
+final = []
 t=0
 t=checkmate(t,final)
 print(t,'adet rota bulundu, suresi: (', round(time() - start, 2), 'sec )')
-
 
 yaz(final)
 
@@ -283,7 +300,7 @@ for i in range(len(final)):
         df3.at[uz,j] = final[i][j]
         if j != len(final[i])-1: wt=wt+abs((df.at[final[i][j],'Delivery Date'] - df.at[final[i][j+1],'Goods issue date']).total_seconds())
         dt = dt + distanceChecker(final[i][j],-1)
-    df4.at[uz,0] = ((dt)-(distanceChecker( df.at[final[i][0],'ID'] , df.at[(len(final[i])-1),'ID'])))/2  - (40 * (wt/(60*60*24))) - (distanceChecker( df.at[final[i][0],'ID'] , df.at[(len(final[i])-1),'ID']))
+    df4.at[uz,0] = ((dt)-(distanceChecker( final[i][0] ,final[i][-1])))/2  - (40 * (wt/(60*60*24))) - (distanceChecker( final[i][0] , final[i][-1]))
     uz = uz + 1
 
 df3.drop('Unnamed: 0', axis=1).to_excel('ids_2.xlsx')
