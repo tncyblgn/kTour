@@ -39,19 +39,12 @@ def knightsT(): #GÜVENLİ YOLLARI ISSAFE FONKSİYONU İLE TEST EDİP X MATRİS�
     return x
 
 def check(i,j,k): # çek fonksiyonu
-    if k == 0:
+    if (k == 0) or (k == 2):
         if str(df.at[ i, 'Origin Postal Code']) == str(df.at[ j, 'Destination Postal Code']): #i ve j yi posta koduna göre doğruluyor
             return True
-    if k == 1:
+    if (k == 1) or (k == 3):
         if distanceChecker(i,j) < 100 :
             return True
-    if k == 2:
-        if str(df.at[ i, 'Origin Postal Code']) == str(df.at[ j, 'Destination Postal Code']): #i ve j yi posta koduna göre doğruluyor
-            return True
-    if k == 3:
-        if distanceChecker(i,j) < 100 :
-            return True
-
     if k == -1:
         return True
     return False
@@ -275,7 +268,6 @@ def yaz(final):
 
 
 
-
 df = koordinatlamav3(df)
 x = knightsT()
 
@@ -297,11 +289,13 @@ for i in range(len(final)):
     dt = 0
     wt = 0
     for j in range(len(final[i])):
-        df3.at[uz,j] = final[i][j]
+        df3.at[uz,j] = df.at[final[i][j], 'ID'] ############################
         if j != len(final[i])-1: wt=wt+abs((df.at[final[i][j],'Delivery Date'] - df.at[final[i][j+1],'Goods issue date']).total_seconds())
         dt = dt + distanceChecker(final[i][j],-1)
     df4.at[uz,0] = ((dt)-(distanceChecker( final[i][0] ,final[i][-1])))/2  - (40 * (wt/(60*60*24))) - (distanceChecker( final[i][0] , final[i][-1]))
     uz = uz + 1
+
+     / 2 - 40(wt)
 
 df3.drop('Unnamed: 0', axis=1).to_excel('ids_2.xlsx')
 df4.drop('Unnamed: 0', axis=1).to_excel('saving_list_2.xlsx')
