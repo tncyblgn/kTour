@@ -335,7 +335,7 @@ def Alekhine(temp_list, A, lst, lst_v, ff ):
                 lst_v -= temp_list[1][A][i]
     return ff
 
-def Nehir(lst):
+def Gudobi(lst):
     a_list = lst.copy()
     final  = []
     total  = 0
@@ -590,4 +590,4 @@ t = checkmate(t,final)
 all_List = matches.copy()
 for i in final: all_List.append(i)
 #print(all_List)
-Nehir(all_List)
+Gudobi(all_List)
