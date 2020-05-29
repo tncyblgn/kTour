@@ -517,7 +517,11 @@ class Match:
         return "[{}]".format(", ".join([str(p) for p in self.pairs]))
 
 def calculate2():
-    global rows
+
+    rows = []
+    for i in range(len(df)):
+        line = [df.at[i,'ID'], df.at[i,'Origin Postal Code'], df.at[i,'Destination Postal Code'], df.at[i,'Goods issue date'], df.at[i,'Delivery Date'], df.at[i,'distance']]
+        rows.append(line)
 
     routes: List[Route] = []
     for row in rows:
@@ -553,15 +557,8 @@ def calculate2():
         matches.append(match)
 
     print('Total matches:', len(matches))
-    """f = open('res.txt', 'w')
-
-    for i, m in enumerate(matches):
-        f.write("{} - {}\n".format(i, m))
-    f.close()"""
 
     output_list = [match.pairs for match in matches]
-    """output_df = pd.DataFrame(output_list)
-    output_df.to_excel('res.xlsx')"""
 
     output_list_2 = []
     for i, match in enumerate(matches):
@@ -569,9 +566,6 @@ def calculate2():
         for p in match.pairs:
             output_list_2[i].append(p.first.no)
             output_list_2[i].append(p.second.no)
-
-    """output_df = pd.DataFrame(output_list_2)
-    output_df.to_excel('ids.xlsx')"""
 
     tmp = []
     for i in range(len(output_list_2)):
@@ -586,12 +580,6 @@ def calculate2():
     return tmp
 
 df = koordinatlamav3(df)
-
-rows = []
-for row in df.values:
-    line = [row[0], row[7], row[12], row[14], row[15], row[29] ]
-    #line = ['ID', 'Origin Postal Code', 'Destination Postal Code', 'Goods issue date', 'Delivery Date', 'distance' ]
-    rows.append(line)
 
 matches = calculate2()
 
