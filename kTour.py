@@ -234,6 +234,8 @@ def yaz(final):
         df2.at[m,9]  = '-------------'
         df2.at[m,10] = '-----Total Wt-----'
         df2.at[m,11] = '--Total Distance--'
+        df2.at[m,12] = '--Kalan Mesafe--'
+        df2.at[m,13] = '--Saving--'  ### saving sonucu  -  total saving.
         m = m + 1
         w = 1
         wt = 0
