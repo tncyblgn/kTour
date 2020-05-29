@@ -553,15 +553,15 @@ def calculate2():
         matches.append(match)
 
     print('Total matches:', len(matches))
-    f = open('res.txt', 'w')
+    """f = open('res.txt', 'w')
 
     for i, m in enumerate(matches):
         f.write("{} - {}\n".format(i, m))
-    f.close()
+    f.close()"""
 
     output_list = [match.pairs for match in matches]
-    output_df = pd.DataFrame(output_list)
-    output_df.to_excel('res.xlsx')
+    """output_df = pd.DataFrame(output_list)
+    output_df.to_excel('res.xlsx')"""
 
     output_list_2 = []
     for i, match in enumerate(matches):
