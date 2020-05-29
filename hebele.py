@@ -398,6 +398,8 @@ def Gudobi(lst):
                 print('asdasd')
 
     print(total)
+    final = [total, b]
+    return final
 
 def sectoD(time):
     day = time // (24 * 3600)
@@ -409,7 +411,9 @@ def sectoD(time):
     seconds = time
     return ('%d day(s) %02d:%02d:%02d' %(day, hour, minutes, seconds))
 
-def yaz(final):
+def yaz(ff):
+    df2 = pd.DataFrame()
+    final = ff[1]
     print('bulunan rotalar dosyalanıyor...')
     m=0
     for i in tqdm(range(len(final))):
@@ -425,7 +429,7 @@ def yaz(final):
         df2.at[m,9]  = '-------------'
         df2.at[m,10] = '-----Total Wt-----'
         df2.at[m,11] = '--Total Distance--'
-        df2.at[m,12] = '--Kalan Mesafe--'
+        df2.at[m,12] = '--Rem Distance--'
         df2.at[m,13] = '--Saving--'  ### saving sonucu  -  total saving.
         m = m + 1
         w = 1
@@ -454,10 +458,15 @@ def yaz(final):
                 df2.at[m,10]=sectoD(wt)
                 df2.at[m,11]=str('%.1f'%dt) + ' km'
                 df2.at[m,12]=str('%.1f'%(distanceChecker( final[i][0], final[i][-1]))) + ' km'
+                df2.at[m,13]=str('%.1f'%list_value(final[i]))
                 m=m+1
+    m = m + 1
+    df2.at[m,14]=str('%.1f'%ff[0])
+    df2.at[m,15]='total-saving'
     df2.sort_index(inplace=True)
     df2.sort_index(inplace=True,axis=1)
     df2.to_excel("output.xlsx", index=False, header=False)
+
 
 
 #df = koordinatlamav3(df)
@@ -590,4 +599,5 @@ t = checkmate(t,final)
 all_List = matches.copy()
 for i in final: all_List.append(i)
 #print(all_List)
-Gudobi(all_List)
+ff = Gudobi(all_List)
+yaz(ff)
