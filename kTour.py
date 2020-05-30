@@ -280,7 +280,7 @@ t=checkmate(t,final)
 print(t,'adet rota bulundu, suresi: (', round(time() - start, 2), 'sec )')
 
 yaz(final)
-
+"""
 file = r'ids.xlsx'
 df3 = pd.read_excel(file)
 file2 = r'saving_list.xlsx'
@@ -301,3 +301,4 @@ for i in range(len(final)):
 
 df3.drop('Unnamed: 0', axis=1).to_excel('ids_2.xlsx')
 df4.drop('Unnamed: 0', axis=1).to_excel('saving_list_2.xlsx')
+"""
