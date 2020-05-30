@@ -7,7 +7,7 @@ import pgeocode
 from typing import List
 
 
-file = r'Data/dataset.xlsx'
+#file = r'Data/dataset.xlsx'
 df = pd.read_excel(file)
 df = df.sort_values('Goods issue date')
 file2 = r'Data/IsoChange.txt'
@@ -16,6 +16,11 @@ df2 = pd.DataFrame()
 
 TOLERANCE = 7 * 24 * 60 * 60
 BBB = 40
+MAX = 100
+A = 1
+B = 40
+C = 1
+
 
 
 def koordinatlamav3(df): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
@@ -101,7 +106,7 @@ def check(i,j,k): # çek fonksiyonu
         if str(df.at[ i, 'Origin Postal Code']) == str(df.at[ j, 'Destination Postal Code']): #i ve j yi posta koduna göre doğruluyor
             return True
     if (k == 1) or (k == 3):
-        if distanceChecker(i,j) < 100 :
+        if distanceChecker(i,j) <= MAX :
             return True
     if k == -1:
         return True
@@ -216,7 +221,6 @@ def checkmate(t,final):
             devam = False
     return t
 
-
 def all_elements(lst):
     all_elem = []
     for i in lst:
@@ -257,7 +261,8 @@ def list_value(lst):
         else: dist = distanceChecker(lst[0] ,lst[-1])
     #return total_d - (total_w*rpd)
     #print('(',total_d, '-', dist,')/','2-', '(',BBB,'*',total_w,') - (',dist,')')
-    return ((total_d - dist)/2 - (BBB*total_w) - (dist))
+    #return ((total_d - dist)/2 - (BBB*total_w) - (dist))
+    return (A*(total_d - dist)/2 - B*(total_w) - C*(dist))
 
 def f_value(lst):
     total = 0
