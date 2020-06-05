@@ -8,7 +8,17 @@ from typing import List
 from tkinter import *
 from tkinter.filedialog import askopenfile
 import tkinter as tk
-#from win32com.client import Dispatch
+import openpyxl
+from win32com.client import Dispatch
+import os
+
+a = os.path.abspath(os.getcwd())
+print(a)
+path = a + "\output.xlsx"
+path2= a + "/ayik.xlsx"
+print(path)
+
+
 
 
 #file = r'Data/dataset.xlsx'
@@ -20,10 +30,15 @@ A = 1
 B = 40
 C = 1"""
 
-
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.dirname(__file__)
+    return os.path.join(base_path, relative_path)
 
 def koordinatlamav3(df): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HAM DATA
-    print(TOLERANCE, MAX, A, B, C)
+    print(TOLERANCE, MAX, Aaa, Bbb, Ccc)
     cds = []
     for i in range(4): cds.append([])
     print('datadaki iso3 ülke kodları iso2 ye çevriliyor..')
@@ -71,8 +86,10 @@ def koordinatlamav3(df): #HAM DATA >> CDS MATRİSİ >> KOORDİNALAR >> CDS >> HA
     df.drop(index=fals, inplace=True)
     df = df[df.lat.notnull()]
     df = df[df.lat2.notnull()]
-    df.to_excel('./Data/ayik.xlsx', index = False)
-    df = pd.read_excel(r'Data/ayik.xlsx', index = False)
+    df.to_excel('./ayik.xlsx', index = False)
+    #df = pd.read_excel(r'/ayik.xlsx', index = False)
+    df = pd.read_excel(path2, index = False)
+    os.remove(path2)
     df = df.sort_values('Goods issue date')
 
     return df
@@ -262,7 +279,7 @@ def list_value(lst):
     #return total_d - (total_w*rpd)
     #print('(',total_d, '-', dist,')/','2-', '(',BBB,'*',total_w,') - (',dist,')')
     #return ((total_d - dist)/2 - (BBB*total_w) - (dist))
-    return (A*(total_d - dist)/2 - B*(total_w) - C*(dist))
+    return (Aaa*(total_d - dist)/2 - Bbb*(total_w) - Ccc*(dist))
 
 def f_value(lst):
     total = 0
@@ -316,7 +333,7 @@ def Alekhine(temp_list, A, lst, lst_v, ff ):
                 if A+1 < len(temp_list[0]):
                     ff = Alekhine(temp_list, A+1, lst, lst_v, ff)
                 else:
-                    if lst_v > ff[1]:
+                    if abs(lst_v) > ff[1]:
                         ff[1] = lst_v
                         ff[0] = lst.copy()
                         #print(ff[1],ff[0])
@@ -337,7 +354,7 @@ def Gudobi(lst):
             if len(i)>tmp : tmp = len(i)
         for i in a_list:
             if len(i)==tmp : f_list.append(i)
-        print(tmp)
+        #print(tmp, ' zaaaaaaaaaaaaaaaaaa')
         f_list_c = all_elements(f_list)
         while f_list_c != []:
             tmp = []
@@ -360,7 +377,7 @@ def Gudobi(lst):
             tmp_final = []
             final_v = 0
             tmp_final_v = 0
-            ff = [[], -9999999999999999999999999999999999]
+            ff = [[], -999999999999999999999999999999999999999999]
 
 
             ff = Alekhine(temp_list, 0, tmp_final, tmp_final_v, ff)
@@ -371,6 +388,7 @@ def Gudobi(lst):
                 a_list = Corona(i, a_list)
 
         #for i in f_list: a_list.remove(i)
+        #for i in f_list: Corona(i, a_list)
 
 
     b = []
@@ -455,7 +473,8 @@ def yaz(ff):
     df2.at[m,15]='total-saving'
     df2.sort_index(inplace=True)
     df2.sort_index(inplace=True,axis=1)
-    df2.to_excel("output.xlsx", index=False, header=False)
+    path3 = a + '/output.xlsx'
+    df2.to_excel(path3, index=False, header=False)
 
 
 
@@ -631,40 +650,37 @@ def getfile():
     lbl0.config(text = file)
 def clicked():
 
-    global TOLERANCE, MAX, A, B, C
+    global TOLERANCE, MAX, Aaa, Bbb, Ccc
 
 
 
     TOLERANCE = entry1.get()
     MAX       = entry2.get()
-    A         = entry3.get()
-    B         = entry4.get()
-    C         = entry5.get()
+    Aaa       = entry3.get()
+    Bbb       = entry4.get()
+    Ccc       = entry5.get()
 
-    if TOLERANCE == '':TOLERANCE = 7
-    if MAX      == '': MAX    = 50
-    if A        == '': A      = 1
-    if B        == '': B      = 40
-    if C        == '': C      = 1
+    if TOLERANCE == '': TOLERANCE = 7
+    if MAX       == '': MAX       = 50
+    if Aaa       == '': Aaa       = 1
+    if Bbb       == '': Bbb       = 40
+    if Ccc       == '': Ccc       = 1
 
     TOLERANCE=int(TOLERANCE)
     MAX=int(MAX)
-    A=int(A)
-    B=int(B)
-    C=int(C)
+    Aaa=int(Aaa)
+    Bbb=int(Bbb)
+    Ccc=int(Ccc)
 
     global df, cd, df2, matches, x, ff, all_List
     df = pd.read_excel(file)
     df = df.sort_values('Goods issue date')
-    file2 = r'Data/IsoChange.txt'
+    file2 = resource_path('./Data/IsoChange.txt')
+    #file2 = r'Data/IsoChange.txt'
     cd = pd.read_csv(file2, sep="\t", header = None, low_memory=False, names= ["country", "iso2", "iso3", "4"])
     df2 = pd.DataFrame()
-
-
     df = koordinatlamav3(df)
-
     matches = calculate2()
-
     x = knightsT()
     t = 0
     final = []
@@ -675,9 +691,9 @@ def clicked():
     ff = Gudobi(all_List)
     yaz(ff)
 
-    """xl = Dispatch("Excel.Application")
+    xl = Dispatch("Excel.Application")
     xl.Visible = True # otherwise excel is hidden
-    wb = xl.Workbooks.Open(r'"output.xlsx"')"""
+    wb = xl.Workbooks.Open(path)
 
 btn = Button(window, text="FILE", command=getfile)
 btn.grid(column=7, row=0)
@@ -686,4 +702,3 @@ btn2 = Button(window, text="RUN", command=clicked)
 btn2.grid(column=8, row=3, columnspan=10, rowspan=6, sticky=(N, S, E, W))
 
 window.mainloop()
-print(file)
